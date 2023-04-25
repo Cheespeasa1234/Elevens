@@ -2,9 +2,14 @@ package cards.card;
 
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
+import lib.Interactable;
 
 public class Card {
 
@@ -12,21 +17,34 @@ public class Card {
 	private String rank;
 	private int pointValue;
 
-	public static Image RED_BACK;
-	public static Image BLUE_BACK;
-	public Image front, back;
+	public static Image RED_BACK, BLUE_BACK;
+	public static int cardW = 50, cardH = 100;
+	public Image front, back, frontScale, backScale;
+
+	public boolean hovering = false, holding = false;
+	public boolean revealed = true;
+	
+	public int x, y, w, h;
 
 	public Card(String cardRank, String cardSuit, int cardPointValue) {
 		this.rank = cardRank;
 		this.suit = cardSuit;
 		this.pointValue = cardPointValue;
-		loadImage();
+		try {
+			loadImage(cardW, cardH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void loadImage() {
-		File f = new File("img_cards/fronts/png_96_dpi/"+this.suit+"_"+this.rank+".png");
+	public void loadImage(int w, int h) throws IOException {
+		File f = new File("img_cards/fronts/png_96_dpi/" + this.suit + "_" + this.rank + ".png");
+		URL url = f.toURI().toURL();
 		System.out.println(f.getAbsolutePath());
-		this.front = new ImageIcon(f.getPath()).getImage();
+		System.out.println(url.toString());
+		
+		this.front = ImageIO.read(f);
+		this.frontScale = front.getScaledInstance(w, h, Image.SCALE_SMOOTH);
 	}
 
 	public boolean matches(Card otherCard) {
@@ -63,5 +81,6 @@ public class Card {
 	public String toString() {
 		return "Card[rank:" + rank + " suit:" + suit + " points:" + pointValue + "]";
 	}
+
 }
  

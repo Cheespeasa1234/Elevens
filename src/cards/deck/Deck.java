@@ -15,7 +15,7 @@ import cards.card.Card;
 public class Deck {
 
 	public static final String[] SUITS = { "clubs", "hearts", "spades", "diamonds" };
-	public static final String[] RANKS = { "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+	public static final String[] RANKS = { "2", "3", "4", "5", "6", "7", "8", "9", 
 											"10", "jack", "queen", "king", "ace" 
 	};
 	
@@ -31,8 +31,26 @@ public class Deck {
 	 * size is the number of not-yet-dealt cards.
 	 * Cards are dealt from the top (highest index) down.
 	 * The next card to be dealt is at size - 1.
+	 * cutoffBottom + cutoffTop = cards.size() - size
 	 */
 	public int size;
+
+	/*
+	 * The number of cards dealt from the bottom of the deck.
+	 * cutoffBottom + cutoffTop = cards.size() - size
+	 */
+	public int cutoffBottom = 0;
+
+	/*
+	 * The number of cards dealt from the top of the deck.
+	 * cutoffBottom + cutoffTop = cards.size() - size
+	 */
+	public int cutoffTop = 0;
+
+	/*
+	 * Stores the last card dealt.
+	*/
+	public Card lastDealt;
 
 	/**
 	 * Creates a new <code>Deck</code> instance.<BR>
@@ -73,12 +91,25 @@ public class Deck {
 	public boolean isEmpty() {
 		return size == 0;
 	}
+
+	public List<Card> undealtCards() {
+		if(isEmpty()) return List.of();
+
+		return cards.subList(cutoffBottom, cards.size() - cutoffTop);
+	}
+
 	/**
 	 * Randomly permute the given collection of cards
 	 * and reset the size to represent the entire deck.
 	 */
+	public void perfectShuffle() {
+		Shuffler.perfectShuffle(this);
+	}
+
 	public void shuffle() {
+		List<Card> cards = this.cards.subList(0, size);
 		Collections.shuffle(cards);
+		this.cards = cards;
 	}
 
 	/**
@@ -90,9 +121,20 @@ public class Deck {
 	public Card deal() {
 		if(size < 1)
 			return null;
-		Card c = cards.get(size-1);
-		size --;
-		return c;
+		lastDealt = cards.get(cards.size()-cutoffTop-1);
+		size--;
+		cutoffTop++;
+		return lastDealt;
+	}
+
+	// remove the card at the bottom and put it to the top, where it then gets cut out
+	public Card pop() {
+		if(size < 1)
+			return null;
+		lastDealt = cards.get(cutoffBottom);
+		size--;
+		cutoffBottom++;
+		return lastDealt;
 	}
 
 	/**
