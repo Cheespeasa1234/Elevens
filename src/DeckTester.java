@@ -1,7 +1,3 @@
-package cards.deck;
-
-import cards.card.Card;
-
 /**
  * This is a class that tests the Deck class.
  */

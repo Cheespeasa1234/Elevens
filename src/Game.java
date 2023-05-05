@@ -23,8 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import cards.card.Card;
-import cards.deck.Deck;
+import lib.ImageLoader;
 
 public class Game extends JPanel implements MouseMotionListener, MouseListener {
 
@@ -61,6 +60,13 @@ public class Game extends JPanel implements MouseMotionListener, MouseListener {
         while(start + millis < System.currentTimeMillis()) {System.out.print(".");}
     }
 
+    public void loadAssets() {
+        Card.RED_BACK = ImageLoader.loadImage("/cards/backs/png_96_dpi/red.png");
+        Card.BLUE_BACK = ImageLoader.loadImage("/cards/backs/png_96_dpi/blue.png");
+        Card.RED_BACK_SCALE = Card.RED_BACK.getScaledInstance(cardW, cardH, Image.SCALE_SMOOTH);
+        Card.BLUE_BACK_SCALE = Card.BLUE_BACK.getScaledInstance(cardW, cardH, Image.SCALE_SMOOTH);
+    }
+
     public Game() {
         this.setFocusable(true);
         this.setBackground(Color.WHITE);
@@ -71,7 +77,7 @@ public class Game extends JPanel implements MouseMotionListener, MouseListener {
         // d.shuffle();
         for (Card c : d.cards) {
             try {
-                c.loadImage(cardW, cardH);
+                c.loadImages();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -121,7 +127,7 @@ public class Game extends JPanel implements MouseMotionListener, MouseListener {
         g2.drawRoundRect(x, y, w, h, cardGapX, cardGapY);
         Image i;
         if(w != cardW || h != cardH && c.revealed) {
-            i = c.front.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+            i = c.frontScale;
         } else if(w != cardW || h != cardH && !c.revealed) {
             i = c.isRed() ? Card.RED_BACK : Card.BLUE_BACK;
         } else {
@@ -142,10 +148,10 @@ public class Game extends JPanel implements MouseMotionListener, MouseListener {
         }
     }
 
-    private void renderDeck(Graphics2D g2) {
+    private void renderDeck(Graphics2D g2, int count) {
         List<Card> draw = d.undealtCards();
         int x = cardGapX, y = cardGapY;
-        for(int i = 0; i < draw.size(); i++) {
+        for(int i = 0; i < Math.min(count, draw.size()); i++) {
             Card c = draw.get(i);
             if(updated) {
                 if(x + cardW + 6> PREF_W) {
@@ -171,7 +177,7 @@ public class Game extends JPanel implements MouseMotionListener, MouseListener {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        renderDeck(g2);
+        renderDeck(g2, 9);
 
         g2.drawString(fpsTrack + "", 10, 10);
         

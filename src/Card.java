@@ -1,4 +1,4 @@
-package cards.card;
+
 
 import java.awt.Image;
 import java.io.File;
@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import lib.Interactable;
+import lib.ImageLoader;
 
 public class Card {
 
@@ -18,8 +19,9 @@ public class Card {
 	private int pointValue;
 
 	public static Image RED_BACK, BLUE_BACK;
+	public static Image RED_BACK_SCALE, BLUE_BACK_SCALE;
 	public static int cardW = 50, cardH = 100;
-	public Image front, back, frontScale, backScale;
+	public Image frontScale, backScale;
 
 	public boolean hovering = false, holding = false;
 	public boolean revealed = true;
@@ -30,21 +32,13 @@ public class Card {
 		this.rank = cardRank;
 		this.suit = cardSuit;
 		this.pointValue = cardPointValue;
-		try {
-			loadImage(cardW, cardH);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		loadImages();
+		
 	}
 
-	public void loadImage(int w, int h) throws IOException {
-		File f = new File("img_cards/fronts/png_96_dpi/" + this.suit + "_" + this.rank + ".png");
-		URL url = f.toURI().toURL();
-		System.out.println(f.getAbsolutePath());
-		System.out.println(url.toString());
-		
-		this.front = ImageIO.read(f);
-		this.frontScale = front.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+	public void loadImages() {
+		this.frontScale = ImageLoader.loadImage("/cards/fronts/png_96_dpi/" + suit + "_" + rank + ".png").getScaledInstance(cardW, cardH, Image.SCALE_SMOOTH);
+		this.backScale = isRed() ? RED_BACK_SCALE : BLUE_BACK_SCALE;
 	}
 
 	public boolean matches(Card otherCard) {

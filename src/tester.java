@@ -1,4 +1,4 @@
-import cards.card.*;
+import card.*;
 import cards.deck.*;
 
 public class tester {

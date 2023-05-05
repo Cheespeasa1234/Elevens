@@ -1,11 +1,7 @@
-package cards.deck;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import cards.card.Card;
 
 /**
  * The Deck class represents a shuffled deck of cards.
